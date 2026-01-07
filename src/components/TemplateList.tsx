@@ -4,13 +4,20 @@ import { TemplateCard } from './TemplateCard';
 import { Input } from '@/components/ui/input';
 import { Search, FileText } from 'lucide-react';
 
-interface TemplateListProps {
-  templates: MessageTemplate[];
-  onDelete: (id: string) => void;
-  onSend: (template: MessageTemplate) => void;
+interface Contact {
+  phone: string;
+  name?: string;
+  [key: string]: string | undefined;
 }
 
-export function TemplateList({ templates, onDelete, onSend }: TemplateListProps) {
+interface TemplateListProps {
+  templates: MessageTemplate[];
+  webhookUrl: string | null;
+  onDelete: (id: string) => void;
+  onSend: (template: MessageTemplate, contacts: Contact[]) => void;
+}
+
+export function TemplateList({ templates, webhookUrl, onDelete, onSend }: TemplateListProps) {
   const [search, setSearch] = useState('');
 
   const filteredTemplates = templates.filter(
@@ -48,6 +55,7 @@ export function TemplateList({ templates, onDelete, onSend }: TemplateListProps)
             <TemplateCard
               key={template.id}
               template={template}
+              webhookUrl={webhookUrl}
               onDelete={onDelete}
               onSend={onSend}
             />

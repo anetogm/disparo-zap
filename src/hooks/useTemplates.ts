@@ -3,10 +3,12 @@ import { MessageTemplate, WhatsAppCredentials } from '@/types/template';
 
 const TEMPLATES_KEY = 'whatsapp_templates';
 const CREDENTIALS_KEY = 'whatsapp_credentials';
+const WEBHOOK_KEY = 'n8n_webhook_url';
 
 export function useTemplates() {
   const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [credentials, setCredentials] = useState<WhatsAppCredentials | null>(null);
+  const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(TEMPLATES_KEY);
@@ -17,6 +19,11 @@ export function useTemplates() {
     const storedCreds = localStorage.getItem(CREDENTIALS_KEY);
     if (storedCreds) {
       setCredentials(JSON.parse(storedCreds));
+    }
+
+    const storedWebhook = localStorage.getItem(WEBHOOK_KEY);
+    if (storedWebhook) {
+      setWebhookUrl(storedWebhook);
     }
   }, []);
 
@@ -50,13 +57,26 @@ export function useTemplates() {
     localStorage.removeItem(CREDENTIALS_KEY);
   };
 
+  const saveWebhookUrl = (url: string) => {
+    setWebhookUrl(url);
+    localStorage.setItem(WEBHOOK_KEY, url);
+  };
+
+  const clearWebhookUrl = () => {
+    setWebhookUrl(null);
+    localStorage.removeItem(WEBHOOK_KEY);
+  };
+
   return {
     templates,
     credentials,
+    webhookUrl,
     addTemplate,
     deleteTemplate,
     saveCredentials,
     clearCredentials,
+    saveWebhookUrl,
+    clearWebhookUrl,
     hasCredentials: !!credentials?.token && !!credentials?.wabaId,
   };
 }

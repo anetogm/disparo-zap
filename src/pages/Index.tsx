@@ -1,5 +1,6 @@
 import { useTemplates } from '@/hooks/useTemplates';
 import { CredentialsConfig } from '@/components/CredentialsConfig';
+import { WebhookConfig } from '@/components/WebhookConfig';
 import { TemplateList } from '@/components/TemplateList';
 import { CreateTemplateDialog } from '@/components/CreateTemplateDialog';
 import { MessageTemplate } from '@/types/template';
@@ -7,32 +8,29 @@ import { useToast } from '@/hooks/use-toast';
 import { MessageSquare, Settings, FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+interface Contact {
+  phone: string;
+  name?: string;
+  [key: string]: string | undefined;
+}
+
 const Index = () => {
   const {
     templates,
     credentials,
+    webhookUrl,
     addTemplate,
     deleteTemplate,
     saveCredentials,
     clearCredentials,
+    saveWebhookUrl,
+    clearWebhookUrl,
     hasCredentials,
   } = useTemplates();
   const { toast } = useToast();
 
-  const handleSendTemplate = (template: MessageTemplate) => {
-    if (!hasCredentials) {
-      toast({
-        title: 'Credenciais não configuradas',
-        description: 'Configure seu token e WABA ID na aba Configurações.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    toast({
-      title: 'Template pronto para envio',
-      description: `Template "${template.name}" selecionado. Implemente a integração com a API do WhatsApp.`,
-    });
+  const handleSendTemplate = (template: MessageTemplate, contacts: Contact[]) => {
+    console.log('Template enviado:', template.name, 'para', contacts.length, 'contatos');
   };
 
   const handleDeleteTemplate = (id: string) => {
@@ -94,12 +92,18 @@ const Index = () => {
           <TabsContent value="templates" className="space-y-4">
             <TemplateList
               templates={templates}
+              webhookUrl={webhookUrl}
               onDelete={handleDeleteTemplate}
               onSend={handleSendTemplate}
             />
           </TabsContent>
 
-          <TabsContent value="settings" className="max-w-2xl">
+          <TabsContent value="settings" className="max-w-2xl space-y-6">
+            <WebhookConfig
+              webhookUrl={webhookUrl}
+              onSave={saveWebhookUrl}
+              onClear={clearWebhookUrl}
+            />
             <CredentialsConfig
               credentials={credentials}
               onSave={saveCredentials}
