@@ -2,12 +2,20 @@ import { MessageTemplate } from '@/types/template';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, Send, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { SendTemplateDialog } from './SendTemplateDialog';
+
+interface Contact {
+  phone: string;
+  name?: string;
+  [key: string]: string | undefined;
+}
 
 interface TemplateCardProps {
   template: MessageTemplate;
+  webhookUrl: string | null;
   onDelete: (id: string) => void;
-  onSend: (template: MessageTemplate) => void;
+  onSend: (template: MessageTemplate, contacts: Contact[]) => void;
 }
 
 const categoryLabels = {
@@ -22,7 +30,7 @@ const statusConfig = {
   rejected: { label: 'Rejeitado', icon: XCircle, className: 'bg-destructive/10 text-destructive border-destructive/20' },
 };
 
-export function TemplateCard({ template, onDelete, onSend }: TemplateCardProps) {
+export function TemplateCard({ template, webhookUrl, onDelete, onSend }: TemplateCardProps) {
   const status = statusConfig[template.status];
   const StatusIcon = status.icon;
 
@@ -84,10 +92,11 @@ export function TemplateCard({ template, onDelete, onSend }: TemplateCardProps) 
             >
               <Trash2 className="h-4 w-4" />
             </Button>
-            <Button size="sm" onClick={() => onSend(template)} className="h-8">
-              <Send className="mr-1.5 h-3.5 w-3.5" />
-              Enviar
-            </Button>
+            <SendTemplateDialog
+              template={template}
+              webhookUrl={webhookUrl}
+              onSend={onSend}
+            />
           </div>
         </div>
       </CardContent>
